@@ -1,7 +1,5 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.documents import router as documents_router
 from app.core.database import Base, engine
@@ -15,15 +13,14 @@ app = FastAPI(
 )
 
 
-app.mount(
-    "/static",
-    StaticFiles(directory="../frontend/static"),
-    name="static",
-)
-
-
-templates = Jinja2Templates(
-    directory="../frontend/templates"
+# Allow the separately deployed frontend to communicate with the API.
+# We can restrict this to the Vercel domain after the frontend is deployed.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -38,24 +35,6 @@ def health_check():
         "status": "healthy",
         "service": "document-intelligence-api",
     }
-
-
-@app.get("/", response_class=HTMLResponse)
-def dashboard(request: Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="dashboard.html",
-        context={"request": request},
-    )
-
-
-@app.get("/document", response_class=HTMLResponse)
-def document_result(request: Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="document_result.html",
-        context={"request": request},
-    )
 
 
 app.include_router(documents_router)
