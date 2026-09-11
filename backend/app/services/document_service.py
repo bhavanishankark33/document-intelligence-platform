@@ -1,28 +1,21 @@
 from pathlib import Path
 from typing import BinaryIO
 import shutil
+import logging
+import time
 
 from sqlalchemy.orm import Session
 
-from app.repositories.document_repository import (
-    create_document,
-)
-
-from app.services.document_validation_service import (
-    validate_document,
-)
-
-from app.services.ocr_service import (
-    extract_text,
-)
-
-from app.services.extraction_service import (
-    extract_structured_data,
-)
-
+from app.repositories.document_repository import create_document
+from app.services.document_validation_service import validate_document
+from app.services.ocr_service import extract_text
+from app.services.extraction_service import extract_structured_data
 from app.services.financial_validation_service import (
     validate_document_financials,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 # ============================================================
@@ -41,7 +34,7 @@ SUPPORTED_DOCUMENT_TYPES = {
 # UPLOAD DIRECTORY
 # ============================================================
 
-# document_service.py is located at:
+# document_service.py:
 #
 # backend/
 #   app/
@@ -50,17 +43,9 @@ SUPPORTED_DOCUMENT_TYPES = {
 #
 # parents[2] = backend/
 
-BASE_DIR = Path(
-    __file__
-).resolve().parents[2]
+BASE_DIR = Path(__file__).resolve().parents[2]
 
-
-UPLOAD_DIR = (
-    BASE_DIR / "uploads"
-)
-
-
-# Make sure the directory exists.
+UPLOAD_DIR = BASE_DIR / "uploads"
 
 UPLOAD_DIR.mkdir(
     parents=True,
@@ -77,11 +62,10 @@ def save_uploaded_file(
     filename: str,
 ) -> Path:
     """
-    Save the original uploaded document
-    into backend/uploads/.
+    Save the original uploaded document.
 
-    The original file is preserved so that
-    the frontend can display it later.
+    The original file is preserved so that it can
+    be accessed later by the frontend.
     """
 
     if not filename:
@@ -90,28 +74,15 @@ def save_uploaded_file(
         )
 
     # --------------------------------------------------------
-    # Security:
-    # only keep the actual filename.
-    #
-    # Example:
-    #
-    # ../../secret.pdf
-    #
-    # becomes:
-    #
-    # secret.pdf
+    # Secure filename
     # --------------------------------------------------------
 
-    safe_filename = Path(
-        filename
-    ).name
-
+    safe_filename = Path(filename).name
 
     if not safe_filename:
         raise ValueError(
             "Invalid uploaded filename."
         )
-
 
     # --------------------------------------------------------
     # Allowed extensions
@@ -124,31 +95,20 @@ def save_uploaded_file(
         ".png",
     }
 
-
-    extension = (
-        Path(safe_filename)
-        .suffix
-        .lower()
-    )
-
+    extension = Path(
+        safe_filename
+    ).suffix.lower()
 
     if extension not in allowed_extensions:
-
         raise ValueError(
-            "Only PDF, JPG and PNG "
-            "documents are supported."
+            "Only PDF, JPG and PNG documents are supported."
         )
 
-
     # --------------------------------------------------------
-    # Final path
+    # Destination
     # --------------------------------------------------------
 
-    destination = (
-        UPLOAD_DIR /
-        safe_filename
-    )
-
+    destination = UPLOAD_DIR / safe_filename
 
     # --------------------------------------------------------
     # Reset file position
@@ -156,9 +116,8 @@ def save_uploaded_file(
 
     file.seek(0)
 
-
     # --------------------------------------------------------
-    # Save binary file
+    # Save file
     # --------------------------------------------------------
 
     with open(
@@ -171,17 +130,14 @@ def save_uploaded_file(
             output_file,
         )
 
-
     # --------------------------------------------------------
-    # Verify that file was actually saved
+    # Verify saved file
     # --------------------------------------------------------
 
     if not destination.exists():
-
         raise IOError(
             "Uploaded file could not be saved."
         )
-
 
     if destination.stat().st_size == 0:
 
@@ -193,6 +149,11 @@ def save_uploaded_file(
             "Uploaded file was saved as an empty file."
         )
 
+    logger.info(
+        "File saved successfully: %s (%d bytes)",
+        destination.name,
+        destination.stat().st_size,
+    )
 
     return destination
 
@@ -213,228 +174,321 @@ def process_document(
 
     Flow:
 
-    Upload
-        ↓
-    File validation
-        ↓
-    Save original file
-        ↓
-    OCR / text extraction
-        ↓
-    Gemini structured extraction
-        ↓
-    Financial validation
-        ↓
-    Supabase persistence
-        ↓
-    JSON response
+        Upload
+            ↓
+        File validation
+            ↓
+        Save original file
+            ↓
+        OCR / text extraction
+            ↓
+        Gemini structured extraction
+            ↓
+        Financial validation
+            ↓
+        Database persistence
+            ↓
+        JSON response
     """
 
-    # ========================================================
-    # 1. VALIDATE DOCUMENT TYPE
-    # ========================================================
+    start_time = time.time()
 
-    if document_type not in SUPPORTED_DOCUMENT_TYPES:
+    logger.info(
+        "Processing started: filename=%s document_type=%s content_type=%s",
+        filename,
+        document_type,
+        content_type,
+    )
 
-        raise ValueError(
-            f"Unsupported document type: "
-            f"{document_type}"
+    try:
+
+        # ====================================================
+        # 1. VALIDATE DOCUMENT TYPE
+        # ====================================================
+
+        if document_type not in SUPPORTED_DOCUMENT_TYPES:
+
+            logger.warning(
+                "Unsupported document type: %s",
+                document_type,
+            )
+
+            raise ValueError(
+                f"Unsupported document type: {document_type}"
+            )
+
+        # ====================================================
+        # 2. BASIC FILE VALIDATION
+        # ====================================================
+
+        logger.info(
+            "Stage 1: validating document: %s",
+            filename,
         )
 
+        validation = validate_document(
+            file=file,
+            filename=filename,
+            content_type=content_type,
+        )
 
-    # ========================================================
-    # 2. BASIC FILE VALIDATION
-    # ========================================================
+        logger.info(
+            "Stage 1 complete: supported=%s readable=%s pages=%s",
+            validation.get("is_supported"),
+            validation.get("is_readable"),
+            validation.get("page_count"),
+        )
 
-    validation = validate_document(
-        file=file,
-        filename=filename,
-        content_type=content_type,
-    )
+        # ====================================================
+        # 3. RESET FILE POINTER
+        # ====================================================
 
+        file.seek(0)
 
-    # ========================================================
-    # 3. RESET FILE POINTER
-    # ========================================================
+        # ====================================================
+        # 4. SAVE ORIGINAL FILE
+        # ====================================================
 
-    file.seek(0)
+        logger.info(
+            "Stage 2: saving original file: %s",
+            filename,
+        )
 
+        saved_file = save_uploaded_file(
+            file=file,
+            filename=filename,
+        )
 
-    # ========================================================
-    # 4. SAVE ORIGINAL FILE
-    # ========================================================
+        logger.info(
+            "Stage 2 complete: file saved to %s",
+            saved_file,
+        )
 
-    saved_file = save_uploaded_file(
-        file=file,
-        filename=filename,
-    )
+        # ====================================================
+        # 5. RESET FILE POINTER
+        # ====================================================
 
+        file.seek(0)
 
-    # ========================================================
-    # 5. RESET FILE POINTER AGAIN
-    # ========================================================
+        # ====================================================
+        # 6. OCR / TEXT EXTRACTION
+        # ====================================================
 
-    file.seek(0)
+        logger.info(
+            "Stage 3: starting OCR/text extraction: %s",
+            filename,
+        )
 
+        ocr_result = extract_text(
+            file=file,
+            content_type=content_type,
+        )
 
-    # ========================================================
-    # 6. OCR / TEXT EXTRACTION
-    # ========================================================
+        logger.info(
+            "Stage 3 complete: OCR finished | ocr_used=%s | pages=%s | text_length=%s",
+            ocr_result.get("ocr_used"),
+            ocr_result.get("page_count"),
+            len(ocr_result.get("text", "")),
+        )
 
-    ocr_result = extract_text(
-        file=file,
-        content_type=content_type,
-    )
+        # ====================================================
+        # 7. STRUCTURED AI EXTRACTION
+        # ====================================================
 
+        logger.info(
+            "Stage 4: starting Gemini extraction: %s",
+            filename,
+        )
 
-    # ========================================================
-    # 7. STRUCTURED AI EXTRACTION
-    # ========================================================
+        extracted_data = extract_structured_data(
+            document_type=document_type,
+            ocr_result=ocr_result,
+        )
 
-    extracted_data = extract_structured_data(
-        document_type=document_type,
-        ocr_result=ocr_result,
-    )
+        logger.info(
+            "Stage 4 complete: Gemini extraction finished | fields=%s | tables=%s",
+            len(extracted_data.get("fields", [])),
+            len(extracted_data.get("tables", [])),
+        )
 
+        # ====================================================
+        # 8. FINANCIAL VALIDATION
+        # ====================================================
 
-    # ========================================================
-    # 8. DETERMINISTIC FINANCIAL VALIDATION
-    # ========================================================
+        logger.info(
+            "Stage 5: starting financial validation: %s",
+            filename,
+        )
 
-    validation_result = (
-        validate_document_financials(
+        validation_result = validate_document_financials(
             document_type=document_type,
             extracted_data=extracted_data,
         )
-    )
 
+        logger.info(
+            "Stage 5 complete: financial validation=%s",
+            validation_result.get("overall_status"),
+        )
 
-    # ========================================================
-    # 9. FINAL PROCESSING STATUS
-    # ========================================================
+        # ====================================================
+        # 9. FINAL PROCESSING STATUS
+        # ====================================================
 
-    final_status = (
-        validation_result[
+        final_status = validation_result[
             "overall_status"
         ]
-    )
 
+        # ====================================================
+        # 10. SAVE RESULT TO DATABASE
+        # ====================================================
 
-    # ========================================================
-    # 10. SAVE RESULT TO DATABASE
-    # ========================================================
+        logger.info(
+            "Stage 6: saving result to database: %s",
+            filename,
+        )
 
-    document = create_document(
-        db=db,
+        document = create_document(
+            db=db,
 
-        document_name=filename,
+            document_name=filename,
 
-        document_type=document_type,
+            document_type=document_type,
 
-        processing_status=final_status,
+            processing_status=final_status,
 
-        file_type=content_type,
+            file_type=content_type,
 
-        is_supported=validation[
-            "is_supported"
-        ],
+            is_supported=validation[
+                "is_supported"
+            ],
 
-        is_readable=validation[
-            "is_readable"
-        ],
+            is_readable=validation[
+                "is_readable"
+            ],
 
-        page_count=validation[
-            "page_count"
-        ],
+            page_count=validation[
+                "page_count"
+            ],
 
-        extracted_data=extracted_data,
+            extracted_data=extracted_data,
 
-        validation_result=validation_result,
+            validation_result=validation_result,
 
-        processing_metadata={
-            "ocr_used":
-                ocr_result[
+            processing_metadata={
+                "ocr_used": ocr_result[
                     "ocr_used"
                 ],
 
-            "page_count":
-                ocr_result[
+                "page_count": ocr_result[
                     "page_count"
                 ],
 
-            "saved_file":
-                str(saved_file),
-        },
-    )
+                "saved_file": str(
+                    saved_file
+                ),
+            },
+        )
 
+        logger.info(
+            "Stage 6 complete: database save successful | document_id=%s",
+            document.id,
+        )
 
-    # ========================================================
-    # 11. RETURN API RESPONSE
-    # ========================================================
+        # ====================================================
+        # 11. PROCESSING COMPLETE
+        # ====================================================
 
-    return {
+        duration = time.time() - start_time
 
-        "document": {
+        logger.info(
+            "Processing completed successfully | filename=%s | duration=%.2fs",
+            filename,
+            duration,
+        )
 
-            "id":
-                str(document.id),
+        # ====================================================
+        # 12. RETURN API RESPONSE
+        # ====================================================
 
-            "document_name":
-                document.document_name,
+        return {
 
-            "document_type":
-                document.document_type,
+            "document": {
 
-            "processing_status":
-                document.processing_status,
-        },
+                "id": str(
+                    document.id
+                ),
 
+                "document_name":
+                    document.document_name,
 
-        "validation": {
+                "document_type":
+                    document.document_type,
 
-            "file_type":
-                validation[
-                    "file_type"
-                ],
+                "processing_status":
+                    document.processing_status,
+            },
 
-            "is_supported":
-                validation[
-                    "is_supported"
-                ],
+            "validation": {
 
-            "is_readable":
-                validation[
-                    "is_readable"
-                ],
+                "file_type":
+                    validation[
+                        "file_type"
+                    ],
 
-            "page_count":
-                validation[
-                    "page_count"
-                ],
-        },
+                "is_supported":
+                    validation[
+                        "is_supported"
+                    ],
 
+                "is_readable":
+                    validation[
+                        "is_readable"
+                    ],
 
-        "extracted_data":
-            extracted_data,
+                "page_count":
+                    validation[
+                        "page_count"
+                    ],
+            },
 
+            "extracted_data":
+                extracted_data,
 
-        "financial_validation":
-            validation_result,
+            "financial_validation":
+                validation_result,
 
+            "processing_metadata": {
 
-        "processing_metadata": {
+                "ocr_used":
+                    ocr_result[
+                        "ocr_used"
+                    ],
 
-            "ocr_used":
-                ocr_result[
-                    "ocr_used"
-                ],
+                "page_count":
+                    ocr_result[
+                        "page_count"
+                    ],
 
-            "page_count":
-                ocr_result[
-                    "page_count"
-                ],
+                "saved_file":
+                    str(saved_file),
+            },
+        }
 
-            "saved_file":
-                str(saved_file),
-        },
-    }
+    except Exception as exc:
+
+        # ====================================================
+        # CONTROLLED ERROR LOGGING
+        # ====================================================
+
+        duration = time.time() - start_time
+
+        logger.exception(
+            "Document processing failed | filename=%s | duration=%.2fs | error=%s",
+            filename,
+            duration,
+            str(exc),
+        )
+
+        # Re-raise so the API route can convert the
+        # exception into the appropriate HTTP response.
+        raise
