@@ -49,7 +49,7 @@ router = APIRouter(
 # ============================================================
 
 @router.post("/process")
-async def process_document_endpoint(
+def process_document_endpoint(
     file: UploadFile = File(...),
     document_type: str = Form(...),
     db: Session = Depends(get_db),
@@ -94,27 +94,19 @@ async def process_document_endpoint(
                 },
             )
 
-
         # ----------------------------------------------------
         # Process document
         # ----------------------------------------------------
 
         result = process_document(
-
             db=db,
-
             file=file.file,
-
             filename=file.filename,
-
             content_type=file.content_type,
-
             document_type=document_type,
         )
 
-
         return result
-
 
     # ========================================================
     # FILE VALIDATION ERROR
@@ -123,15 +115,12 @@ async def process_document_endpoint(
     except DocumentValidationError as exc:
 
         raise HTTPException(
-
             status_code=400,
-
             detail={
                 "code": exc.code,
                 "message": exc.message,
             },
         )
-
 
     # ========================================================
     # INVALID REQUEST
@@ -140,15 +129,12 @@ async def process_document_endpoint(
     except ValueError as exc:
 
         raise HTTPException(
-
             status_code=400,
-
             detail={
                 "code": "INVALID_REQUEST",
                 "message": str(exc),
             },
         )
-
 
     # ========================================================
     # GEMINI QUOTA ERROR
@@ -162,18 +148,12 @@ async def process_document_endpoint(
         )
 
         raise HTTPException(
-
             status_code=429,
-
             detail={
-                "code":
-                    "AI_QUOTA_EXCEEDED",
-
-                "message":
-                    exc.message,
+                "code": "AI_QUOTA_EXCEEDED",
+                "message": exc.message,
             },
         )
-
 
     # ========================================================
     # GEMINI SERVICE ERROR
@@ -187,18 +167,12 @@ async def process_document_endpoint(
         )
 
         raise HTTPException(
-
             status_code=503,
-
             detail={
-                "code":
-                    "AI_SERVICE_UNAVAILABLE",
-
-                "message":
-                    exc.message,
+                "code": "AI_SERVICE_UNAVAILABLE",
+                "message": exc.message,
             },
         )
-
 
     # ========================================================
     # HTTP EXCEPTION
@@ -207,7 +181,6 @@ async def process_document_endpoint(
     except HTTPException:
 
         raise
-
 
     # ========================================================
     # UNEXPECTED ERROR
@@ -221,18 +194,13 @@ async def process_document_endpoint(
         )
 
         raise HTTPException(
-
             status_code=500,
-
             detail={
-                "code":
-                    "PROCESSING_ERROR",
-
-                "message":
-                    (
-                        "An unexpected error occurred "
-                        "while processing the document."
-                    ),
+                "code": "PROCESSING_ERROR",
+                "message": (
+                    "An unexpected error occurred "
+                    "while processing the document."
+                ),
             },
         )
 
@@ -251,51 +219,25 @@ def list_documents(
 
     documents = get_all_documents(db)
 
-
     return {
-
-        "count":
-            len(documents),
-
+        "count": len(documents),
         "documents": [
-
             {
-
-                "id":
-                    str(document.id),
-
-                "document_name":
-                    document.document_name,
-
-                "document_type":
-                    document.document_type,
-
-                "processing_status":
-                    document.processing_status,
-
-                "file_type":
-                    document.file_type,
-
-                "is_supported":
-                    document.is_supported,
-
-                "is_readable":
-                    document.is_readable,
-
-                "page_count":
-                    document.page_count,
-
-                "ocr_used":
-    (
-        document.processing_metadata.get("ocr_used")
-        if document.processing_metadata
-        else None
-    ),
-
-                "created_at":
-                    document.created_at,
+                "id": str(document.id),
+                "document_name": document.document_name,
+                "document_type": document.document_type,
+                "processing_status": document.processing_status,
+                "file_type": document.file_type,
+                "is_supported": document.is_supported,
+                "is_readable": document.is_readable,
+                "page_count": document.page_count,
+                "ocr_used": (
+                    document.processing_metadata.get("ocr_used")
+                    if document.processing_metadata
+                    else None
+                ),
+                "created_at": document.created_at,
             }
-
             for document in documents
         ],
     }
@@ -332,41 +274,31 @@ def get_document_file(
         document_name,
     )
 
-
     if document is None:
 
         raise HTTPException(
-
             status_code=404,
-
             detail={
-                "code":
-                    "DOCUMENT_NOT_FOUND",
-
-                "message":
-                    "Document not found.",
+                "code": "DOCUMENT_NOT_FOUND",
+                "message": "Document not found.",
             },
         )
-
 
     # --------------------------------------------------------
     # Upload directory
     # --------------------------------------------------------
 
     upload_directory = (
-
         Path(__file__)
         .resolve()
         .parents[3]
         / "uploads"
     )
 
-
     upload_directory.mkdir(
         parents=True,
         exist_ok=True,
     )
-
 
     # --------------------------------------------------------
     # Safe filename
@@ -376,28 +308,20 @@ def get_document_file(
         document.document_name
     ).name
 
-
     if not safe_filename:
 
         raise HTTPException(
-
             status_code=400,
-
             detail={
-                "code":
-                    "INVALID_FILE_PATH",
-
-                "message":
-                    "Invalid document path.",
+                "code": "INVALID_FILE_PATH",
+                "message": "Invalid document path.",
             },
         )
-
 
     requested_path = (
         upload_directory
         / safe_filename
     )
-
 
     # --------------------------------------------------------
     # Security check
@@ -420,18 +344,12 @@ def get_document_file(
     except ValueError:
 
         raise HTTPException(
-
             status_code=400,
-
             detail={
-                "code":
-                    "INVALID_FILE_PATH",
-
-                "message":
-                    "Invalid document path.",
+                "code": "INVALID_FILE_PATH",
+                "message": "Invalid document path.",
             },
         )
-
 
     # --------------------------------------------------------
     # Check original file
@@ -440,40 +358,28 @@ def get_document_file(
     if not file_path.exists():
 
         raise HTTPException(
-
             status_code=404,
-
             detail={
-                "code":
-                    "FILE_NOT_FOUND",
-
-                "message":
-                    (
-                        "The original uploaded file "
-                        "is not available."
-                    ),
+                "code": "FILE_NOT_FOUND",
+                "message": (
+                    "The original uploaded file "
+                    "is not available."
+                ),
             },
         )
-
 
     if not file_path.is_file():
 
         raise HTTPException(
-
             status_code=404,
-
             detail={
-                "code":
-                    "FILE_NOT_FOUND",
-
-                "message":
-                    (
-                        "The requested document "
-                        "file is not available."
-                    ),
+                "code": "FILE_NOT_FOUND",
+                "message": (
+                    "The requested document "
+                    "file is not available."
+                ),
             },
         )
-
 
     # --------------------------------------------------------
     # Determine MIME type
@@ -483,7 +389,6 @@ def get_document_file(
         document.file_type
     )
 
-
     if not media_type:
 
         suffix = (
@@ -491,7 +396,6 @@ def get_document_file(
             .suffix
             .lower()
         )
-
 
         if suffix == ".pdf":
 
@@ -520,19 +424,14 @@ def get_document_file(
                 "application/octet-stream"
             )
 
-
     # --------------------------------------------------------
     # Return original file INLINE
     # --------------------------------------------------------
 
     return FileResponse(
-
         path=str(file_path),
-
         media_type=media_type,
-
         filename=document.document_name,
-
         content_disposition_type="inline",
     )
 
@@ -564,71 +463,31 @@ def get_document(
         document_name,
     )
 
-
     if document is None:
 
         raise HTTPException(
-
             status_code=404,
-
             detail={
-                "code":
-                    "DOCUMENT_NOT_FOUND",
-
-                "message":
-                    "Document not found.",
+                "code": "DOCUMENT_NOT_FOUND",
+                "message": "Document not found.",
             },
         )
 
-
     return {
-
         "document": {
-
-            "id":
-                str(document.id),
-
-            "document_name":
-                document.document_name,
-
-            "document_type":
-                document.document_type,
-
-            "processing_status":
-                document.processing_status,
-
-            "file_type":
-                document.file_type,
-
-            "is_supported":
-                document.is_supported,
-
-            "is_readable":
-                document.is_readable,
-
-            "page_count":
-                document.page_count,
-
-            "created_at":
-                document.created_at,
-
-            "updated_at":
-                document.updated_at,
+            "id": str(document.id),
+            "document_name": document.document_name,
+            "document_type": document.document_type,
+            "processing_status": document.processing_status,
+            "file_type": document.file_type,
+            "is_supported": document.is_supported,
+            "is_readable": document.is_readable,
+            "page_count": document.page_count,
+            "created_at": document.created_at,
+            "updated_at": document.updated_at,
         },
-
-
-        "extracted_data":
-            document.extracted_data,
-
-
-        "financial_validation":
-            document.validation_result,
-
-
-        "processing_metadata":
-            document.processing_metadata,
-
-
-        "error_message":
-            document.error_message,
+        "extracted_data": document.extracted_data,
+        "financial_validation": document.validation_result,
+        "processing_metadata": document.processing_metadata,
+        "error_message": document.error_message,
     }
