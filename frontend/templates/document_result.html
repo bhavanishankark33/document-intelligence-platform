@@ -1,0 +1,2965 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Document Review</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
+        body {
+            margin: 0;
+            background: #050a12;
+            color: #e8eef8;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+
+        .review-page {
+            min-height: 100vh;
+            background: #050a12;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .review-header {
+            height: 92px;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid #182438;
+
+            background: #060b13;
+            box-sizing: border-box;
+        }
+
+
+        .review-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+
+        .eyebrow {
+            color: #42a5ff;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+
+        .review-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 750;
+            letter-spacing: -1px;
+        }
+
+
+        .back-button {
+            border: 1px solid #29405e;
+            background: #101b2c;
+            color: #d8e4f3;
+
+            padding: 10px 18px;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            text-decoration: none;
+        }
+
+
+        .back-button:hover {
+            background: #16263d;
+            border-color: #3b5f86;
+        }
+
+
+        /* =====================================================
+           DOCUMENT HEADER
+           ===================================================== */
+
+        .document-header {
+            min-height: 120px;
+
+            padding: 26px 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid #182438;
+
+            box-sizing: border-box;
+        }
+
+
+        .document-title-area {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+
+        .document-icon {
+            width: 54px;
+            height: 54px;
+
+            border-radius: 14px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #122642;
+
+            color: #57aaff;
+
+            font-size: 25px;
+        }
+
+
+        .document-title-area h2 {
+            margin: 0 0 5px 0;
+
+            font-size: 25px;
+            font-weight: 750;
+
+            color: #edf4ff;
+        }
+
+
+        .document-subtitle {
+            color: #71849e;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           STATUS
+           ===================================================== */
+
+        .status-badge {
+            padding: 8px 15px;
+
+            border-radius: 9px;
+
+            font-size: 11px;
+            font-weight: 850;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+        }
+
+
+        .status-pass {
+            color: #24e3ad;
+            background: rgba(17, 145, 103, 0.18);
+        }
+
+
+        .status-fail {
+            color: #ff7777;
+            background: rgba(190, 48, 48, 0.18);
+        }
+
+
+        .status-na {
+            color: #b8c1cf;
+            background: #202b3c;
+        }
+
+
+        /* =====================================================
+           MAIN REVIEW AREA
+           ===================================================== */
+
+        .review-content {
+            display: grid;
+
+            grid-template-columns:
+                minmax(420px, 55%)
+                minmax(450px, 45%);
+
+            min-height: calc(100vh - 213px);
+        }
+
+
+        /* =====================================================
+           LEFT PREVIEW
+           ===================================================== */
+
+        .preview-panel {
+            min-width: 0;
+
+            background: #050a12;
+
+            border-right: 1px solid #182438;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .preview-toolbar {
+            height: 68px;
+
+            padding: 0 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            background: #0c1625;
+
+            border-bottom: 1px solid #1a2a40;
+
+            box-sizing: border-box;
+        }
+
+
+        .preview-file-name {
+            color: #7f93ae;
+
+            font-size: 14px;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            max-width: 55%;
+        }
+
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+        .zoom-button {
+            width: 40px;
+            height: 40px;
+
+            border-radius: 9px;
+
+            border: 1px solid #2b405b;
+
+            background: #101d30;
+
+            color: #b9c9dc;
+
+            font-size: 21px;
+
+            cursor: pointer;
+        }
+
+
+        .zoom-button:hover {
+            background: #172941;
+        }
+
+
+        .zoom-value {
+            min-width: 45px;
+
+            text-align: center;
+
+            color: #93a6bf;
+
+            font-size: 14px;
+        }
+
+
+        .document-preview-area {
+            position: relative;
+
+            flex: 1;
+
+            min-height: 600px;
+
+            overflow: auto;
+
+            background:
+                radial-gradient(
+                    circle at 20% 20%,
+                    rgba(34, 76, 116, 0.08),
+                    transparent 28%
+                ),
+                #040912;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+
+            padding: 48px;
+
+            box-sizing: border-box;
+        }
+
+
+        /* =====================================================
+           REAL IMAGE PREVIEW
+           ===================================================== */
+
+        .document-preview-image {
+            display: block;
+
+            width: auto;
+            height: auto;
+
+            max-width: none;
+
+            object-fit: contain;
+
+            transform-origin: top center;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.45);
+
+            background: white;
+
+            transition:
+                transform 0.15s ease;
+        }
+
+
+        /* =====================================================
+           REAL PDF PREVIEW
+           ===================================================== */
+
+        .document-preview-pdf {
+            width: 100%;
+            height: 850px;
+
+            border: none;
+
+            background: white;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.45);
+        }
+
+
+        /* =====================================================
+           LOADING
+           ===================================================== */
+
+        .document-preview-loading {
+            position: absolute;
+
+            top: 25px;
+            left: 25px;
+            right: 25px;
+
+            padding: 14px 18px;
+
+            border-radius: 10px;
+
+            background: #101c2d;
+
+            border: 1px solid #213550;
+
+            color: #90a4bd;
+
+            font-size: 14px;
+
+            text-align: center;
+        }
+
+
+        /* =====================================================
+           PLACEHOLDER
+           ===================================================== */
+
+        .document-preview-placeholder {
+            width: 78%;
+            min-height: 720px;
+
+            padding: 70px;
+
+            box-sizing: border-box;
+
+            background: #f6f2e9;
+
+            color: #162b4a;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.45);
+
+            flex-direction: column;
+        }
+
+
+        .preview-placeholder-title {
+            font-size: 30px;
+            font-weight: 850;
+
+            margin-bottom: 30px;
+
+            letter-spacing: 1px;
+        }
+
+
+        .preview-placeholder-line {
+            height: 10px;
+
+            width: 75%;
+
+            background: #c9c7c1;
+
+            border-radius: 5px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .preview-placeholder-line.short {
+            width: 48%;
+        }
+
+
+        .preview-placeholder-line.medium {
+            width: 65%;
+        }
+
+
+        .preview-placeholder-divider {
+            height: 3px;
+
+            width: 100%;
+
+            background: #1b3558;
+
+            margin: 30px 0;
+        }
+
+
+        .preview-placeholder-row {
+            height: 2px;
+
+            width: 100%;
+
+            background: #d8d5cd;
+
+            margin: 16px 0;
+        }
+
+
+        /* =====================================================
+           PREVIEW ERROR
+           ===================================================== */
+
+        .document-preview-error {
+            padding: 20px;
+
+            border-radius: 12px;
+
+            background: rgba(150, 40, 40, 0.18);
+
+            border: 1px solid #74363e;
+
+            color: #ff8585;
+
+            font-size: 14px;
+
+            max-width: 500px;
+
+            text-align: center;
+        }
+
+
+        /* =====================================================
+           RIGHT REVIEW PANEL
+           ===================================================== */
+
+        .review-panel {
+            min-width: 0;
+
+            padding: 38px 34px;
+
+            background: #060c15;
+
+            overflow-y: auto;
+
+            box-sizing: border-box;
+        }
+
+
+        .section {
+            margin-bottom: 34px;
+        }
+
+
+        .section-header {
+            margin-bottom: 16px;
+        }
+
+
+        .section-header h3 {
+            margin: 0 0 5px 0;
+
+            font-size: 20px;
+            font-weight: 750;
+
+            color: #eef4fd;
+        }
+
+
+        .section-header p {
+            margin: 0;
+
+            color: #7186a1;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           ERROR
+           ===================================================== */
+
+        .load-error {
+            padding: 16px 18px;
+
+            border-radius: 10px;
+
+            background: rgba(150, 40, 40, 0.25);
+
+            border: 1px solid #87363f;
+
+            color: #ff8585;
+
+            font-size: 14px;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* =====================================================
+           EXTRACTED FIELDS
+           ===================================================== */
+
+        .field-card {
+            margin-bottom: 12px;
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            background: #0d1929;
+
+            border: 1px solid #1e3149;
+        }
+
+
+        .field-name {
+            color: #7288a3;
+
+            font-size: 12px;
+
+            font-weight: 750;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 7px;
+        }
+
+
+        .field-value {
+            color: #edf4ff;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            line-height: 1.45;
+
+            word-break: break-word;
+        }
+
+
+        .field-value.missing {
+            color: #ffb0b0;
+            font-style: italic;
+        }
+
+
+        .field-evidence {
+            margin-top: 13px;
+
+            padding-top: 12px;
+
+            border-top: 1px solid #1c2c42;
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px 18px;
+
+            color: #7f94ad;
+
+            font-size: 12px;
+        }
+
+
+        .evidence-label {
+            color: #9cafc6;
+
+            font-weight: 700;
+        }
+
+
+        /* =====================================================
+           TABLES
+           ===================================================== */
+
+        .table-card {
+            margin-bottom: 14px;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            background: #0d1929;
+
+            border: 1px solid #1e3149;
+        }
+
+
+        .table-title {
+            padding: 16px 18px;
+
+            color: #dce8f7;
+
+            font-weight: 750;
+
+            border-bottom: 1px solid #1c2d43;
+        }
+
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+
+        .extracted-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 13px;
+        }
+
+
+        .extracted-table th {
+            padding: 11px 13px;
+
+            text-align: left;
+
+            color: #7388a3;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.6px;
+
+            white-space: nowrap;
+        }
+
+
+        .extracted-table td {
+            padding: 12px 13px;
+
+            color: #d8e3f1;
+
+            border-top: 1px solid #192b40;
+
+            vertical-align: top;
+        }
+
+
+        .extracted-table tr:hover td {
+            background: rgba(50, 90, 130, 0.08);
+        }
+
+
+        /* =====================================================
+           VALIDATION
+           ===================================================== */
+
+        .validation-card {
+            padding: 18px;
+
+            border-radius: 12px;
+
+            background: #0d1929;
+
+            border: 1px solid #1e3149;
+
+            margin-bottom: 12px;
+        }
+
+
+        .validation-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .validation-formula {
+            color: #e7eef9;
+
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+
+        .validation-status {
+            padding: 5px 9px;
+
+            border-radius: 7px;
+
+            font-size: 10px;
+
+            font-weight: 850;
+
+            letter-spacing: 0.8px;
+        }
+
+
+        .validation-pass {
+            color: #28e4ae;
+
+            background: rgba(
+                22,
+                154,
+                112,
+                0.15
+            );
+        }
+
+
+        .validation-fail {
+            color: #ff7474;
+
+            background: rgba(
+                194,
+                50,
+                50,
+                0.15
+            );
+        }
+
+
+        .validation-na {
+            color: #aeb9c9;
+
+            background: #202c3e;
+        }
+
+
+        .validation-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 10px;
+        }
+
+
+        .validation-value {
+            padding: 11px;
+
+            border-radius: 8px;
+
+            background: #091321;
+
+            border: 1px solid #182a40;
+        }
+
+
+        .validation-value-label {
+            color: #71869f;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 5px;
+        }
+
+
+        .validation-value-number {
+            color: #dfe9f7;
+
+            font-weight: 700;
+
+            font-size: 13px;
+
+            word-break: break-word;
+        }
+
+
+        /* =====================================================
+           PROCESSING INFO
+           ===================================================== */
+
+        .info-card {
+            padding: 18px;
+
+            border-radius: 12px;
+
+            background: #0d1929;
+
+            border: 1px solid #1e3149;
+        }
+
+
+        .info-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 10px 0;
+
+            border-bottom: 1px solid #192b40;
+        }
+
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .info-label {
+            color: #7388a3;
+
+            font-size: 13px;
+        }
+
+
+        .info-value {
+            color: #dce7f5;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            text-align: right;
+
+            word-break: break-word;
+        }
+
+
+        /* =====================================================
+           RAW JSON
+           ===================================================== */
+
+        .raw-json-wrapper {
+            margin-top: 20px;
+        }
+
+
+        .raw-json-summary {
+            cursor: pointer;
+
+            color: #7fa8d3;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        .raw-json {
+            margin-top: 12px;
+
+            padding: 18px;
+
+            border-radius: 10px;
+
+            background: #03070d;
+
+            border: 1px solid #17283c;
+
+            color: #b9c9dc;
+
+            font-size: 12px;
+
+            line-height: 1.55;
+
+            overflow-x: auto;
+
+            max-height: 500px;
+        }
+
+
+        /* =====================================================
+           EXPORT
+           ===================================================== */
+
+        .export-button {
+            width: 100%;
+
+            margin-top: 18px;
+
+            padding: 13px 18px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #2384ef;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 750;
+
+            cursor: pointer;
+        }
+
+
+        .export-button:hover {
+            background: #3291f8;
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+           ===================================================== */
+
+        .empty-state {
+            padding: 20px;
+
+            border-radius: 10px;
+
+            background: #0d1929;
+
+            border: 1px solid #1e3149;
+
+            color: #71869f;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (
+            max-width: 1050px
+        ) {
+
+            .review-content {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-panel {
+                min-height: 650px;
+
+                border-right: none;
+
+                border-bottom: 1px solid #182438;
+            }
+
+            .review-panel {
+                padding: 28px 22px;
+            }
+
+        }
+
+
+        @media (
+            max-width: 650px
+        ) {
+
+            .review-header {
+                padding: 0 18px;
+            }
+
+            .document-header {
+                padding: 20px 18px;
+            }
+
+            .document-title-area h2 {
+                font-size: 20px;
+            }
+
+            .preview-toolbar {
+                padding: 0 14px;
+            }
+
+            .document-preview-area {
+                padding: 20px;
+            }
+
+            .document-preview-placeholder {
+                width: 95%;
+                padding: 35px;
+            }
+
+            .validation-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="review-page">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="review-header">
+
+        <div class="review-header-left">
+
+            <div class="eyebrow">
+                Documents / Review
+            </div>
+
+            <h1>
+                Document review
+            </h1>
+
+        </div>
+
+
+        <a
+            href="/"
+            class="back-button"
+        >
+            ← Back to workspace
+        </a>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         DOCUMENT HEADER
+         ===================================================== -->
+
+    <section class="document-header">
+
+        <div class="document-title-area">
+
+            <div class="document-icon">
+                ▤
+            </div>
+
+            <div>
+
+                <h2 id="documentName">
+                    Loading...
+                </h2>
+
+                <div
+                    id="documentSubtitle"
+                    class="document-subtitle"
+                >
+                    Loading document...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="documentStatus"
+            class="status-badge status-na"
+        >
+            LOADING
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="review-content">
+
+
+        <!-- =================================================
+             LEFT: DOCUMENT PREVIEW
+             ================================================= -->
+
+        <section class="preview-panel">
+
+
+            <div class="preview-toolbar">
+
+                <div
+                    id="previewFileName"
+                    class="preview-file-name"
+                >
+                    Loading...
+                </div>
+
+
+                <div class="zoom-controls">
+
+                    <button
+                        id="zoomOut"
+                        class="zoom-button"
+                        type="button"
+                    >
+                        −
+                    </button>
+
+                    <span
+                        id="zoomValue"
+                        class="zoom-value"
+                    >
+                        100%
+                    </span>
+
+                    <button
+                        id="zoomIn"
+                        class="zoom-button"
+                        type="button"
+                    >
+                        +
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <div
+                id="documentPreviewArea"
+                class="document-preview-area"
+            >
+
+
+                <div
+                    id="documentPreviewLoading"
+                    class="document-preview-loading"
+                >
+                    Loading document...
+                </div>
+
+
+                <!-- REAL IMAGE -->
+
+                <img
+                    id="documentPreviewImage"
+                    class="document-preview-image"
+                    alt="Uploaded document preview"
+                    style="display: none;"
+                >
+
+
+                <!-- REAL PDF -->
+
+                <iframe
+                    id="documentPreviewPdf"
+                    class="document-preview-pdf"
+                    title="Uploaded PDF preview"
+                    style="display: none;"
+                ></iframe>
+
+
+                <!-- PLACEHOLDER -->
+
+                <div
+                    id="documentPreviewPlaceholder"
+                    class="document-preview-placeholder"
+                    style="display: none;"
+                >
+
+                    <div class="preview-placeholder-title">
+                        DOCUMENT PREVIEW
+                    </div>
+
+                    <div class="preview-placeholder-line"></div>
+
+                    <div class="preview-placeholder-line short"></div>
+
+                    <div class="preview-placeholder-line"></div>
+
+                    <div class="preview-placeholder-line medium"></div>
+
+                    <div class="preview-placeholder-divider"></div>
+
+                    <div class="preview-placeholder-row"></div>
+
+                    <div class="preview-placeholder-row"></div>
+
+                    <div class="preview-placeholder-row"></div>
+
+                    <div class="preview-placeholder-row"></div>
+
+                    <div class="preview-placeholder-row"></div>
+
+                </div>
+
+
+                <!-- ERROR -->
+
+                <div
+                    id="documentPreviewError"
+                    class="document-preview-error"
+                    style="display: none;"
+                >
+                    Unable to load document preview.
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             RIGHT: REVIEW PANEL
+             ================================================= -->
+
+        <section class="review-panel">
+
+
+            <!-- PAGE ERROR -->
+
+            <div
+                id="pageError"
+                class="load-error"
+                style="display: none;"
+            ></div>
+
+
+
+            <!-- =================================================
+                 EXTRACTED FIELDS
+                 ================================================= -->
+
+            <section class="section">
+
+                <div class="section-header">
+
+                    <h3>
+                        Extracted fields
+                    </h3>
+
+                    <p>
+                        AI-extracted values with evidence and source pages.
+                    </p>
+
+                </div>
+
+
+                <div id="fieldsContainer">
+
+                    <div class="empty-state">
+                        Loading extracted fields...
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 EXTRACTED TABLES
+                 ================================================= -->
+
+            <section class="section">
+
+                <div class="section-header">
+
+                    <h3>
+                        Extracted tables
+                    </h3>
+
+                    <p>
+                        Structured tables detected in the document.
+                    </p>
+
+                </div>
+
+
+                <div id="tablesContainer">
+
+                    <div class="empty-state">
+                        Loading extracted tables...
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 FINANCIAL VALIDATION
+                 ================================================= -->
+
+            <section class="section">
+
+                <div class="section-header">
+
+                    <h3>
+                        Financial validation
+                    </h3>
+
+                    <p>
+                        Deterministic checks performed against extracted values.
+                    </p>
+
+                </div>
+
+
+                <div id="validationContainer">
+
+                    <div class="empty-state">
+                        Loading financial validation...
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PROCESSING INFORMATION
+                 ================================================= -->
+
+            <section class="section">
+
+                <div class="section-header">
+
+                    <h3>
+                        Processing information
+                    </h3>
+
+                    <p>
+                        Document processing metadata.
+                    </p>
+
+                </div>
+
+
+                <div id="processingContainer">
+
+                    <div class="empty-state">
+                        Loading processing information...
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 RAW JSON
+                 ================================================= -->
+
+            <div class="raw-json-wrapper">
+
+                <details>
+
+                    <summary class="raw-json-summary">
+                        ▸ View raw JSON response
+                    </summary>
+
+                    <pre
+                        id="rawJson"
+                        class="raw-json"
+                    ></pre>
+
+                </details>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 EXPORT
+                 ================================================= -->
+
+            <button
+                id="exportJsonButton"
+                class="export-button"
+                type="button"
+            >
+                ↓ Export JSON
+            </button>
+
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<script>
+
+    /* =========================================================
+       GLOBAL STATE
+       ========================================================= */
+
+    let currentDocument = null;
+
+    let currentZoom = 1;
+
+
+
+    /* =========================================================
+       GET DOCUMENT NAME FROM URL
+       ========================================================= */
+
+    function getDocumentNameFromUrl() {
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        return params.get("name");
+    }
+
+
+
+    /* =========================================================
+       ESCAPE HTML
+       ========================================================= */
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return "";
+        }
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+    }
+
+
+
+    /* =========================================================
+       FORMAT FIELD NAME
+       ========================================================= */
+
+    function formatFieldName(
+        fieldName
+    ) {
+
+        if (!fieldName) {
+            return "Unknown field";
+        }
+
+        return String(fieldName)
+            .replace(
+                /_/g,
+                " "
+            )
+            .replace(
+                /\b\w/g,
+                function (letter) {
+                    return letter.toUpperCase();
+                }
+            );
+    }
+
+
+
+    /* =========================================================
+       FORMAT VALUE
+       ========================================================= */
+
+    function formatValue(
+        value
+    ) {
+
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) {
+
+            return `
+                <span class="missing">
+                    Not available
+                </span>
+            `;
+        }
+
+        return escapeHtml(value);
+    }
+
+
+
+    /* =========================================================
+       STATUS CLASS
+       ========================================================= */
+
+    function getStatusClass(
+        status
+    ) {
+
+        const normalized =
+            String(
+                status || ""
+            ).toUpperCase();
+
+
+        if (
+            normalized === "PASS"
+        ) {
+            return "status-pass";
+        }
+
+
+        if (
+            normalized === "FAIL" ||
+            normalized === "FAILED"
+        ) {
+            return "status-fail";
+        }
+
+
+        return "status-na";
+    }
+
+
+
+    /* =========================================================
+       VALIDATION STATUS CLASS
+       ========================================================= */
+
+    function getValidationClass(
+        status
+    ) {
+
+        const normalized =
+            String(
+                status || ""
+            ).toUpperCase();
+
+
+        if (
+            normalized === "PASS"
+        ) {
+            return "validation-pass";
+        }
+
+
+        if (
+            normalized === "FAIL"
+        ) {
+            return "validation-fail";
+        }
+
+
+        return "validation-na";
+    }
+
+
+
+    /* =========================================================
+       LOAD REAL DOCUMENT PREVIEW
+       ========================================================= */
+
+    function loadDocumentPreview(
+        documentName,
+        fileType
+    ) {
+
+        const image =
+            document.getElementById(
+                "documentPreviewImage"
+            );
+
+        const pdf =
+            document.getElementById(
+                "documentPreviewPdf"
+            );
+
+        const loading =
+            document.getElementById(
+                "documentPreviewLoading"
+            );
+
+        const placeholder =
+            document.getElementById(
+                "documentPreviewPlaceholder"
+            );
+
+        const error =
+            document.getElementById(
+                "documentPreviewError"
+            );
+
+
+        if (
+            !image ||
+            !pdf ||
+            !loading ||
+            !placeholder ||
+            !error
+        ) {
+
+            console.error(
+                "Preview elements are missing."
+            );
+
+            return;
+        }
+
+
+        image.style.display =
+            "none";
+
+        pdf.style.display =
+            "none";
+
+        placeholder.style.display =
+            "none";
+
+        error.style.display =
+            "none";
+
+        loading.style.display =
+            "block";
+
+
+        if (!documentName) {
+
+            loading.style.display =
+                "none";
+
+            placeholder.style.display =
+                "flex";
+
+            return;
+        }
+
+
+        /*
+         * IMPORTANT:
+         *
+         * This is the FILE endpoint.
+         *
+         * We DO NOT call fetch() here.
+         *
+         * The browser directly loads the
+         * binary JPG/PNG/PDF.
+         */
+
+        const fileUrl =
+            `/api/v1/documents/` +
+            `${encodeURIComponent(documentName)}` +
+            `/file`;
+
+
+        console.log(
+            "Document preview URL:",
+            fileUrl
+        );
+
+
+        /* =====================================================
+           IMAGE
+           ===================================================== */
+
+        if (
+            fileType === "image/jpeg" ||
+            fileType === "image/png"
+        ) {
+
+            image.onload =
+                function () {
+
+                    loading.style.display =
+                        "none";
+
+                    image.style.display =
+                        "block";
+
+                    applyZoom();
+
+                };
+
+
+            image.onerror =
+                function () {
+
+                    console.error(
+                        "Unable to load image:",
+                        fileUrl
+                    );
+
+                    loading.style.display =
+                        "none";
+
+                    error.style.display =
+                        "block";
+
+                };
+
+
+            image.src =
+                fileUrl;
+
+            return;
+        }
+
+
+        /* =====================================================
+           PDF
+           ===================================================== */
+
+        if (
+            fileType === "application/pdf"
+        ) {
+
+            loading.style.display =
+                "none";
+
+            pdf.src =
+                fileUrl;
+
+            pdf.style.display =
+                "block";
+
+            return;
+        }
+
+
+        /* =====================================================
+           UNKNOWN
+           ===================================================== */
+
+        loading.style.display =
+            "none";
+
+        placeholder.style.display =
+            "flex";
+    }
+
+
+
+    /* =========================================================
+       RENDER FIELDS
+       ========================================================= */
+
+    function renderFields(
+        extractedData
+    ) {
+
+        const container =
+            document.getElementById(
+                "fieldsContainer"
+            );
+
+
+        const fields =
+            extractedData &&
+            Array.isArray(
+                extractedData.fields
+            )
+                ? extractedData.fields
+                : [];
+
+
+        if (fields.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    No extracted fields available.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML =
+            fields
+                .map(
+                    function (field) {
+
+                        const value =
+                            field.value;
+
+
+                        const evidence =
+                            field.evidence;
+
+
+                        const pageNumber =
+                            field.page_number;
+
+
+                        return `
+                            <div class="field-card">
+
+                                <div class="field-name">
+                                    ${escapeHtml(
+                                        formatFieldName(
+                                            field.field_name
+                                        )
+                                    )}
+                                </div>
+
+                                <div class="field-value ${
+                                    value === null ||
+                                    value === undefined ||
+                                    value === ""
+                                        ? "missing"
+                                        : ""
+                                }">
+
+                                    ${formatValue(value)}
+
+                                </div>
+
+                                <div class="field-evidence">
+
+                                    ${
+                                        evidence
+                                            ? `
+                                                <span>
+                                                    <span class="evidence-label">
+                                                        Evidence:
+                                                    </span>
+
+                                                    ${escapeHtml(
+                                                        evidence
+                                                    )}
+                                                </span>
+                                            `
+                                            : `
+                                                <span>
+                                                    <span class="evidence-label">
+                                                        Evidence:
+                                                    </span>
+
+                                                    Not available
+                                                </span>
+                                            `
+                                    }
+
+
+                                    ${
+                                        pageNumber
+                                            ? `
+                                                <span>
+                                                    <span class="evidence-label">
+                                                        Page:
+                                                    </span>
+
+                                                    ${escapeHtml(
+                                                        pageNumber
+                                                    )}
+                                                </span>
+                                            `
+                                            : ""
+                                    }
+
+                                </div>
+
+                            </div>
+                        `;
+                    }
+                )
+                .join("");
+    }
+
+
+
+    /* =========================================================
+       RENDER TABLES
+       ========================================================= */
+
+    function renderTables(
+        extractedData
+    ) {
+
+        const container =
+            document.getElementById(
+                "tablesContainer"
+            );
+
+
+        const tables =
+            extractedData &&
+            Array.isArray(
+                extractedData.tables
+            )
+                ? extractedData.tables
+                : [];
+
+
+        if (tables.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    No structured tables detected.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML =
+            tables
+                .map(
+                    function (table) {
+
+                        const headers =
+                            Array.isArray(
+                                table.headers
+                            )
+                                ? table.headers
+                                : [];
+
+
+                        const rows =
+                            Array.isArray(
+                                table.rows
+                            )
+                                ? table.rows
+                                : [];
+
+
+                        const headerHtml =
+                            headers
+                                .map(
+                                    function (header) {
+
+                                        return `
+                                            <th>
+                                                ${escapeHtml(
+                                                    header
+                                                )}
+                                            </th>
+                                        `;
+                                    }
+                                )
+                                .join("");
+
+
+                        const rowHtml =
+                            rows
+                                .map(
+                                    function (row) {
+
+                                        return `
+                                            <tr>
+
+                                                ${
+                                                    Array.isArray(row)
+                                                        ? row
+                                                            .map(
+                                                                function (cell) {
+
+                                                                    return `
+                                                                        <td>
+                                                                            ${
+                                                                                cell === null ||
+                                                                                cell === undefined ||
+                                                                                cell === ""
+                                                                                    ? "—"
+                                                                                    : escapeHtml(cell)
+                                                                            }
+                                                                        </td>
+                                                                    `;
+                                                                }
+                                                            )
+                                                            .join("")
+                                                        : ""
+                                                }
+
+                                            </tr>
+                                        `;
+                                    }
+                                )
+                                .join("");
+
+
+                        return `
+                            <div class="table-card">
+
+                                <div class="table-title">
+
+                                    ${escapeHtml(
+                                        table.table_name ||
+                                        "Extracted table"
+                                    )}
+
+                                    ${
+                                        table.page_number
+                                            ? `
+                                                <span
+                                                    style="
+                                                        color:#7186a1;
+                                                        font-size:12px;
+                                                        font-weight:500;
+                                                        margin-left:8px;
+                                                    "
+                                                >
+                                                    Page ${escapeHtml(
+                                                        table.page_number
+                                                    )}
+                                                </span>
+                                            `
+                                            : ""
+                                    }
+
+                                </div>
+
+
+                                <div class="table-wrapper">
+
+                                    <table class="extracted-table">
+
+                                        <thead>
+                                            <tr>
+                                                ${headerHtml}
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            ${rowHtml}
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+                        `;
+                    }
+                )
+                .join("");
+    }
+
+
+
+    /* =========================================================
+       RENDER VALIDATION
+       ========================================================= */
+
+    function renderValidation(
+        validation
+    ) {
+
+        const container =
+            document.getElementById(
+                "validationContainer"
+            );
+
+
+        if (!validation) {
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    No financial validation available.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const checks =
+            Array.isArray(
+                validation.checks
+            )
+                ? validation.checks
+                : [];
+
+
+        if (checks.length === 0) {
+
+            container.innerHTML = `
+                <div class="validation-card">
+
+                    <div class="validation-header">
+
+                        <div class="validation-formula">
+                            No financial validation
+                        </div>
+
+                        <div
+                            class="validation-status validation-na"
+                        >
+                            NOT APPLICABLE
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML =
+            checks
+                .map(
+                    function (check) {
+
+                        const status =
+                            check.status ||
+                            "NOT_APPLICABLE";
+
+
+                        const inputValues =
+                            check.input_values ||
+                            {};
+
+
+                        const inputHtml =
+                            Object.entries(
+                                inputValues
+                            )
+                            .map(
+                                function (
+                                    [key, value]
+                                ) {
+
+                                    return `
+                                        <div class="validation-value">
+
+                                            <div class="validation-value-label">
+                                                ${escapeHtml(
+                                                    formatFieldName(key)
+                                                )}
+                                            </div>
+
+                                            <div class="validation-value-number">
+                                                ${
+                                                    value === null ||
+                                                    value === undefined
+                                                        ? "—"
+                                                        : escapeHtml(value)
+                                                }
+                                            </div>
+
+                                        </div>
+                                    `;
+                                }
+                            )
+                            .join("");
+
+
+                        return `
+                            <div class="validation-card">
+
+                                <div class="validation-header">
+
+                                    <div class="validation-formula">
+                                        ${escapeHtml(
+                                            check.formula ||
+                                            "Financial check"
+                                        )}
+                                    </div>
+
+                                    <div
+                                        class="validation-status ${getValidationClass(
+                                            status
+                                        )}"
+                                    >
+                                        ${escapeHtml(
+                                            status
+                                        )}
+                                    </div>
+
+                                </div>
+
+
+                                <div class="validation-grid">
+
+                                    ${inputHtml}
+
+
+                                    <div class="validation-value">
+
+                                        <div class="validation-value-label">
+                                            Calculated
+                                        </div>
+
+                                        <div class="validation-value-number">
+
+                                            ${
+                                                check.calculated_value === null ||
+                                                check.calculated_value === undefined
+                                                    ? "—"
+                                                    : escapeHtml(
+                                                        check.calculated_value
+                                                    )
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="validation-value">
+
+                                        <div class="validation-value-label">
+                                            Reported
+                                        </div>
+
+                                        <div class="validation-value-number">
+
+                                            ${
+                                                check.reported_value === null ||
+                                                check.reported_value === undefined
+                                                    ? "—"
+                                                    : escapeHtml(
+                                                        check.reported_value
+                                                    )
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="validation-value">
+
+                                        <div class="validation-value-label">
+                                            Variance
+                                        </div>
+
+                                        <div class="validation-value-number">
+
+                                            ${
+                                                check.variance === null ||
+                                                check.variance === undefined
+                                                    ? "—"
+                                                    : escapeHtml(
+                                                        check.variance
+                                                    )
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        `;
+                    }
+                )
+                .join("");
+    }
+
+
+
+    /* =========================================================
+       RENDER PROCESSING INFO
+       ========================================================= */
+
+    function renderProcessingInfo(
+        documentData,
+        metadata
+    ) {
+
+        const container =
+            document.getElementById(
+                "processingContainer"
+            );
+
+
+        metadata =
+            metadata || {};
+
+
+        container.innerHTML = `
+
+            <div class="info-card">
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        File type
+                    </div>
+
+                    <div class="info-value">
+                        ${
+                            escapeHtml(
+                                documentData.file_type ||
+                                "—"
+                            )
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Pages
+                    </div>
+
+                    <div class="info-value">
+                        ${
+                            escapeHtml(
+                                documentData.page_count ??
+                                "—"
+                            )
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        OCR used
+                    </div>
+
+                    <div class="info-value">
+
+                        ${
+                            metadata.ocr_used === true
+                                ? "Yes"
+                                : metadata.ocr_used === false
+                                    ? "No"
+                                    : "—"
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Document type
+                    </div>
+
+                    <div class="info-value">
+                        ${
+                            escapeHtml(
+                                documentData.document_type ||
+                                "—"
+                            )
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Supported
+                    </div>
+
+                    <div class="info-value">
+                        ${
+                            documentData.is_supported
+                                ? "Yes"
+                                : "No"
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Readable
+                    </div>
+
+                    <div class="info-value">
+                        ${
+                            documentData.is_readable
+                                ? "Yes"
+                                : "No"
+                        }
+                    </div>
+
+                </div>
+
+
+            </div>
+        `;
+    }
+
+
+
+    /* =========================================================
+       LOAD DOCUMENT
+       ========================================================= */
+
+    async function loadDocument() {
+
+        const documentName =
+            getDocumentNameFromUrl();
+
+
+        if (!documentName) {
+
+            showPageError(
+                "No document name was provided."
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/v1/documents/` +
+                    `${encodeURIComponent(
+                        documentName
+                    )}`
+                );
+
+
+            if (!response.ok) {
+
+                let message =
+                    "Unable to load document.";
+
+
+                try {
+
+                    const errorData =
+                        await response.json();
+
+
+                    if (
+                        errorData &&
+                        errorData.detail
+                    ) {
+
+                        if (
+                            typeof errorData.detail ===
+                            "string"
+                        ) {
+
+                            message =
+                                errorData.detail;
+
+                        } else if (
+                            errorData.detail.message
+                        ) {
+
+                            message =
+                                errorData.detail.message;
+                        }
+                    }
+
+                } catch (error) {
+                    // Ignore JSON parsing errors.
+                }
+
+
+                throw new Error(
+                    message
+                );
+            }
+
+
+            const data =
+                await response.json();
+
+
+            currentDocument =
+                data;
+
+
+            const documentData =
+                data.document ||
+                {};
+
+
+            /* =================================================
+               HEADER
+               ================================================= */
+
+            document.getElementById(
+                "documentName"
+            ).textContent =
+                documentData.document_name ||
+                documentName;
+
+
+            document.getElementById(
+                "previewFileName"
+            ).textContent =
+                documentData.document_name ||
+                documentName;
+
+
+            document.getElementById(
+                "documentSubtitle"
+            ).textContent =
+                `${formatFieldName(
+                    documentData.document_type ||
+                    "document"
+                )} · ${
+                    documentData.page_count ??
+                    1
+                } page(s)`;
+
+
+            const statusElement =
+                document.getElementById(
+                    "documentStatus"
+                );
+
+
+            const status =
+                documentData.processing_status ||
+                "NOT_APPLICABLE";
+
+
+            statusElement.textContent =
+                status;
+
+
+            statusElement.className =
+                `status-badge ${getStatusClass(
+                    status
+                )}`;
+
+
+            /* =================================================
+               PREVIEW
+               ================================================= */
+
+            loadDocumentPreview(
+                documentData.document_name,
+                documentData.file_type
+            );
+
+
+            /* =================================================
+               FIELDS
+               ================================================= */
+
+            renderFields(
+                data.extracted_data
+            );
+
+
+            /* =================================================
+               TABLES
+               ================================================= */
+
+            renderTables(
+                data.extracted_data
+            );
+
+
+            /* =================================================
+               VALIDATION
+               ================================================= */
+
+            renderValidation(
+                data.financial_validation
+            );
+
+
+            /* =================================================
+               PROCESSING INFO
+               ================================================= */
+
+            renderProcessingInfo(
+                documentData,
+                data.processing_metadata
+            );
+
+
+            /* =================================================
+               RAW JSON
+               ================================================= */
+
+            document.getElementById(
+                "rawJson"
+            ).textContent =
+                JSON.stringify(
+                    data,
+                    null,
+                    2
+                );
+
+
+        } catch (error) {
+
+            console.error(
+                "Document loading error:",
+                error
+            );
+
+
+            showPageError(
+                error.message ||
+                "Unable to load document."
+            );
+
+        }
+
+    }
+
+
+
+    /* =========================================================
+       PAGE ERROR
+       ========================================================= */
+
+    function showPageError(
+        message
+    ) {
+
+        const pageError =
+            document.getElementById(
+                "pageError"
+            );
+
+
+        pageError.textContent =
+            message;
+
+
+        pageError.style.display =
+            "block";
+
+
+        document.getElementById(
+            "documentName"
+        ).textContent =
+            "Unable to load document";
+
+
+        document.getElementById(
+            "documentSubtitle"
+        ).textContent =
+            message;
+
+
+        const status =
+            document.getElementById(
+                "documentStatus"
+            );
+
+
+        status.textContent =
+            "ERROR";
+
+
+        status.className =
+            "status-badge status-fail";
+
+
+        document.getElementById(
+            "fieldsContainer"
+        ).innerHTML = `
+            <div class="load-error">
+                ${escapeHtml(message)}
+            </div>
+        `;
+
+
+        document.getElementById(
+            "tablesContainer"
+        ).innerHTML = `
+            <div class="empty-state">
+                Unable to load extracted tables.
+            </div>
+        `;
+
+
+        document.getElementById(
+            "validationContainer"
+        ).innerHTML = `
+            <div class="empty-state">
+                Unable to load financial validation.
+            </div>
+        `;
+
+
+        document.getElementById(
+            "processingContainer"
+        ).innerHTML = `
+            <div class="load-error">
+                ${escapeHtml(message)}
+            </div>
+        `;
+
+    }
+
+
+
+    /* =========================================================
+       ZOOM
+       ========================================================= */
+
+    function applyZoom() {
+
+        const image =
+            document.getElementById(
+                "documentPreviewImage"
+            );
+
+
+        if (!image) {
+            return;
+        }
+
+
+        image.style.transform =
+            `scale(${currentZoom})`;
+
+
+        document.getElementById(
+            "zoomValue"
+        ).textContent =
+            `${Math.round(
+                currentZoom * 100
+            )}%`;
+    }
+
+
+
+    document.getElementById(
+        "zoomIn"
+    ).addEventListener(
+        "click",
+        function () {
+
+            currentZoom =
+                Math.min(
+                    currentZoom + 0.1,
+                    3
+                );
+
+            applyZoom();
+
+        }
+    );
+
+
+    document.getElementById(
+        "zoomOut"
+    ).addEventListener(
+        "click",
+        function () {
+
+            currentZoom =
+                Math.max(
+                    currentZoom - 0.1,
+                    0.5
+                );
+
+            applyZoom();
+
+        }
+    );
+
+
+
+    /* =========================================================
+       EXPORT JSON
+       ========================================================= */
+
+    document.getElementById(
+        "exportJsonButton"
+    ).addEventListener(
+        "click",
+        function () {
+
+            if (!currentDocument) {
+
+                alert(
+                    "Document data is not available."
+                );
+
+                return;
+            }
+
+
+            const documentName =
+                currentDocument.document &&
+                currentDocument.document.document_name
+                    ? currentDocument.document.document_name
+                    : "document";
+
+
+            const json =
+                JSON.stringify(
+                    currentDocument,
+                    null,
+                    2
+                );
+
+
+            const blob =
+                new Blob(
+                    [json],
+                    {
+                        type:
+                            "application/json"
+                    }
+                );
+
+
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
+
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+
+            link.href =
+                url;
+
+
+            link.download =
+                `${documentName}.json`;
+
+
+            document.body.appendChild(
+                link
+            );
+
+
+            link.click();
+
+
+            link.remove();
+
+
+            URL.revokeObjectURL(
+                url
+            );
+
+        }
+    );
+
+
+
+    /* =========================================================
+       START
+       ========================================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            loadDocument();
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

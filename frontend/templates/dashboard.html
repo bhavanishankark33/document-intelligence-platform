@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DocuLens — Document Intelligence</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                D
+            </div>
+
+            <div>
+                <div class="brand-name">
+                    Docu<span>Lens</span>
+                </div>
+
+                <div class="brand-sub">
+                    DOCUMENT INTELLIGENCE
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="workspace-switcher">
+
+            <span class="eyebrow">
+                WORKSPACE
+            </span>
+
+            <strong>
+                Financial Review
+            </strong>
+
+            <span>
+                ⌄
+            </span>
+
+        </div>
+
+
+        <nav>
+
+            <div class="nav-label">
+                REVIEW CONSOLE
+            </div>
+
+
+            <a
+                class="nav-item active"
+                href="#dashboard"
+            >
+                <span>▦</span>
+                Workspace
+            </a>
+
+
+            <a
+                class="nav-item"
+                href="#documents"
+            >
+                <span>▤</span>
+                Documents
+
+                <b id="reviewBadge">
+                    0
+                </b>
+            </a>
+
+
+            <a
+                class="nav-item"
+                href="#history"
+            >
+                <span>◷</span>
+                History
+            </a>
+
+
+            <a
+                class="nav-item"
+                href="#api"
+            >
+                <span>◇</span>
+                API & Swagger
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="nav-label">
+                SYSTEM
+            </div>
+
+
+            <div class="system-row">
+
+                <span class="status-dot"></span>
+
+                API connected
+
+            </div>
+
+
+            <div class="system-row muted">
+
+                FastAPI · Supabase · Gemini
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <div class="breadcrumbs">
+
+                    WORKSPACE
+
+                    <span>/</span>
+
+                    ACTIVE REVIEW
+
+                </div>
+
+
+                <h1>
+                    Document workspace
+                </h1>
+
+            </div>
+
+
+            <div class="top-actions">
+
+
+                <div class="search-box">
+
+                    ⌕
+
+                    <input
+                        id="searchInput"
+                        type="text"
+                        placeholder="Search documents"
+                    >
+
+                </div>
+
+
+                <button class="icon-btn">
+                    ♧
+                </button>
+
+
+                <div class="avatar">
+                    DI
+                </div>
+
+
+                <span class="user-name">
+                    Document Intelligence
+                </span>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- ================= PAGE HEADER ================= -->
+
+        <section
+            class="page-head"
+            id="dashboard"
+        >
+
+            <div>
+
+                <div class="section-kicker">
+                    REVIEW CONSOLE · WORKSPACE
+                </div>
+
+
+                <p>
+                    Validate, explain, and review financial documents with confidence.
+                </p>
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                id="quickUploadBtn"
+            >
+
+                ＋ Quick upload
+
+            </button>
+
+        </section>
+
+
+
+        <!-- ================= STATISTICS ================= -->
+
+        <section class="stats-grid">
+
+
+            <article class="stat-card">
+
+                <div class="stat-top">
+
+                    <span>
+                        TOTAL DOCUMENTS
+                    </span>
+
+                    <i>
+                        ▤
+                    </i>
+
+                </div>
+
+
+                <strong id="totalCount">
+                    0
+                </strong>
+
+
+                <small>
+                    Processed documents
+                </small>
+
+            </article>
+
+
+
+            <article class="stat-card success">
+
+                <div class="stat-top">
+
+                    <span>
+                        PASSED
+                    </span>
+
+                    <i>
+                        ✓
+                    </i>
+
+                </div>
+
+
+                <strong id="passedCount">
+                    0
+                </strong>
+
+
+                <small>
+                    Validation passed
+                </small>
+
+            </article>
+
+
+
+            <article class="stat-card warning">
+
+                <div class="stat-top">
+
+                    <span>
+                        NEEDS ATTENTION
+                    </span>
+
+                    <i>
+                        !
+                    </i>
+
+                </div>
+
+
+                <strong id="attentionCount">
+                    0
+                </strong>
+
+
+                <small>
+                    Failed or review items
+                </small>
+
+            </article>
+
+
+
+            <article class="stat-card">
+
+                <div class="stat-top">
+
+                    <span>
+                        OCR DOCUMENTS
+                    </span>
+
+                    <i>
+                        ◎
+                    </i>
+
+                </div>
+
+
+                <strong id="ocrCount">
+                    0
+                </strong>
+
+
+                <small>
+                    OCR used during processing
+                </small>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- ================= UPLOAD ================= -->
+
+        <section
+            class="upload-card"
+            id="uploadSection"
+        >
+
+
+            <div class="upload-copy">
+
+                <div class="upload-icon">
+                    ↑
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Process a financial document
+                    </h2>
+
+
+                    <p>
+                        PDF, JPG or PNG · Maximum 3 pages for PDFs
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="upload-controls">
+
+
+                <!-- DOCUMENT TYPE -->
+
+                <select id="documentType">
+
+                    <option value="invoice">
+                        Invoice
+                    </option>
+
+                    <option value="balance_sheet">
+                        Balance Sheet
+                    </option>
+
+                    <option value="profit_and_loss">
+                        Profit & Loss
+                    </option>
+
+                    <option value="cash_flow_statement">
+                        Cash Flow Statement
+                    </option>
+
+                </select>
+
+
+
+                <!-- FILE -->
+
+                <label class="file-btn">
+
+                    <input
+                        id="fileInput"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    >
+
+                    Choose document
+
+                </label>
+
+
+
+                <!-- PROCESS -->
+
+                <button
+                    class="primary-btn"
+                    id="processBtn"
+                >
+
+                    Process document
+
+                </button>
+
+            </div>
+
+
+
+            <div
+                class="selected-file"
+                id="selectedFile"
+            >
+                No document selected.
+            </div>
+
+
+
+            <!-- PROGRESS -->
+
+            <div
+                class="progress-wrap hidden"
+                id="progressWrap"
+            >
+
+                <div class="progress-line">
+
+                    <span id="progressBar"></span>
+
+                </div>
+
+
+                <div
+                    class="progress-label"
+                    id="progressLabel"
+                >
+                    Preparing document…
+                </div>
+
+            </div>
+
+
+
+            <!-- ERROR -->
+
+            <div
+                class="error-box hidden"
+                id="errorBox"
+            >
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= DOCUMENT LIST ================= -->
+
+        <section
+            class="documents-section"
+            id="documents"
+        >
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-kicker">
+                        RECENT DOCUMENTS
+                    </div>
+
+
+                    <h2>
+                        Review queue
+                    </h2>
+
+                </div>
+
+
+                <button
+                    class="ghost-btn"
+                    id="refreshBtn"
+                >
+
+                    ↻ Refresh
+
+                </button>
+
+            </div>
+
+
+
+            <div class="table-card">
+
+
+                <div class="table-head">
+
+                    <span>
+                        DOCUMENT
+                    </span>
+
+                    <span>
+                        TYPE
+                    </span>
+
+                    <span>
+                        STATUS
+                    </span>
+
+                    <span>
+                        PROCESSED
+                    </span>
+
+                    <span></span>
+
+                </div>
+
+
+                <div
+                    id="documentList"
+                    class="document-list"
+                >
+
+                    <div class="empty-state">
+                        Loading documents…
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= HISTORY ================= -->
+
+        <section
+            class="history-section"
+            id="history"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-kicker">
+                        ACTIVITY
+                    </div>
+
+
+                    <h2>
+                        Recent processing history
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="historyList"
+                class="history-list"
+            >
+
+                <div class="empty-state">
+                    No activity yet.
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= API ================= -->
+
+        <section
+            class="api-section"
+            id="api"
+        >
+
+            <div class="api-card">
+
+                <div>
+
+                    <div class="section-kicker">
+                        DEVELOPER ACCESS
+                    </div>
+
+
+                    <h2>
+                        API & Swagger
+                    </h2>
+
+
+                    <p>
+                        Use the REST API to upload, retrieve, and inspect processed documents.
+                    </p>
+
+                </div>
+
+
+                <a
+                    class="primary-btn link-btn"
+                    href="/docs"
+                    target="_blank"
+                >
+
+                    Open Swagger ↗
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script src="/static/js/app.js"></script>
+
+</body>
+</html>
