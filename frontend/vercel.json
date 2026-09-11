@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/templates/dashboard.html"
+    },
+    {
+      "source": "/document",
+      "destination": "/templates/document_result.html"
+    }
+  ]
+}
