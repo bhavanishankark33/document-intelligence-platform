@@ -8,7 +8,8 @@
    CONFIGURATION
    ========================= */
 
-const API_BASE_URL = "";
+const API_BASE_URL =
+    "https://document-intelligence-platform-kw9e.onrender.com";
 
 
 /* =========================
@@ -593,15 +594,6 @@ function updateDashboardStats(documents) {
                 document.processing_status === "NEEDS_REVIEW"
         ).length;
 
-
-    /*
-     * OCR information is stored in processing metadata
-     * on the detailed document endpoint.
-     *
-     * The list endpoint does not currently expose it,
-     * so this value is estimated from the available
-     * document information until we add it to the API.
-     */
 
     const ocrDocuments =
         documents.filter(
